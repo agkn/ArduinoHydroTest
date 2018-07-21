@@ -4,12 +4,15 @@
 #include "LevelController.h"
 #include "Config.h"
 #include "DHT.h"
+#include "Log.h"
 
 /**
  * A7 - water sensor signal
- * 6 - DHT22
- * 7  - water sensor vcc
- * 8  - pump activator.
+ * 4  - BT Soft serial, RX, PinCode: 1243
+ * 5  - BT Soft serial, TX
+ * 6  - DHT22
+ * 7  - Water sensor VCC
+ * 8  - Pump activator.
  * A4 - RTC SDA
  * A5 - RTC SCL
  */
@@ -22,7 +25,7 @@
 #define DHT_TYPE DHT22
 
 LevelController lc(LEVEL_PIN, LEVEL_VCC_PIN, PUMP_PIN);
-RTClib RTC;
+RTClib clock;
 DS3231 rtc;
 DHT dht(DHT_PIN, DHT_TYPE);
 
@@ -31,13 +34,13 @@ void dht_run();
 void setup() {
 	Serial.begin(9600);
 	Wire.begin();
+	Log::init(Serial);
 	lc.init();
 	lc.enable(false);
 }
 
 void dumpDate() {
-
-    DateTime now = RTC.now();
+    DateTime now = clock.now();
 
     Serial.print(now.year(), DEC);
     Serial.print('/');
@@ -51,7 +54,7 @@ void dumpDate() {
     Serial.print(':');
     Serial.println(now.second(), DEC);
     Serial.print(" temp:");
-    Serial.print(rtc.getTemperature(), DEC);
+    Serial.print(rtc.getTemperature(), 2);
     Serial.println();
 
 /*    Serial.print(" since midnight 1/1/1970 = ");
@@ -66,7 +69,7 @@ void loop() {
 	dht_run();
 	dumpDate();
 	lc.run();
-	delay(1000);
+	delay(5000);
 }
 
 uint32_t cmd_readNumber() {
@@ -80,7 +83,7 @@ uint32_t cmd_readNumber() {
 }
 
 void setTime(uint32_t aTime) {
-	Serial.print("Set time: ");
+	Serial.print("1e: ");
 	Serial.println(aTime);
 
 	DateTime dt(aTime);
@@ -112,31 +115,19 @@ void dht_run() {
 	  float h = dht.readHumidity();
 	  // Read temperature as Celsius (the default)
 	  float t = dht.readTemperature();
-	  // Read temperature as Fahrenheit (isFahrenheit = true)
-	  float f = dht.readTemperature(true);
 
 	  // Check if any reads failed and exit early (to try again).
-	  if (isnan(h) || isnan(t) || isnan(f)) {
+	  if (isnan(h) || isnan(t)) {
 	    Serial.println("Failed to read from DHT sensor!");
 	    return;
 	  }
 
-	  // Compute heat index in Fahrenheit (the default)
-	  float hif = dht.computeHeatIndex(f, h);
-	  // Compute heat index in Celsius (isFahreheit = false)
-	  float hic = dht.computeHeatIndex(t, h, false);
+	  Log::d(0).p(t).p(h).send();
 
 	  Serial.print("Humidity: ");
 	  Serial.print(h);
 	  Serial.print(" %\t");
 	  Serial.print("Temperature: ");
-	  Serial.print(t);
-	  Serial.print(" *C ");
-	  Serial.print(f);
-	  Serial.print(" *F\t");
-	  Serial.print("Heat index: ");
-	  Serial.print(hic);
-	  Serial.print(" *C ");
-	  Serial.print(hif);
-	  Serial.println(" *F");
+	  Serial.print(t, 2);
+	  Serial.println(" *C ");
 }

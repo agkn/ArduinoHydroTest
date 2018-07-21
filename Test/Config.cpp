@@ -39,6 +39,7 @@ bool Config::write(uint8_t aAddr, uint8_t aLen, uint8_t * aValues) {
 	for(int i = 0; i < aLen; i++) {
 		EEPROM.update(EEPROM_DATA_ADDR + aAddr + i, aValues[i]);
 	}
+
 	return true;
 }
 
