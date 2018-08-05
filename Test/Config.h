@@ -26,7 +26,7 @@ public:
 	static uint8_t read_u8(uint8_t aAddr);
 	static uint16_t read_u16(uint8_t aAddr);
 	static void dump();
-	void init();
+	static void init(bool aUseDefaultValues);
 };
 
 #endif /* CONFIG_H_ */

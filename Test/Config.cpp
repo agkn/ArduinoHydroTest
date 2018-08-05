@@ -8,18 +8,15 @@
 #include <EEPROM.h>
 
 #include "Config.h"
+#include "EepromSections.h"
+
+#define TWO_BYTE_VAL(VAL) lowByte(VAL), highByte(VAL)
 
 #define VAL_SENSOR_THRE_LOW 500
 #define VAL_SENSOR_THRE_HI 550
 #define VAL_SENSOR_LPF 0xA
 #define VAL_PUMP_OFF_DELAY 10
 #define VAL_PUMP_SWITCH_INTERVAL 1000
-#define TWO_BYTE_VAL(VAL) lowByte(VAL), highByte(VAL)
-
-typedef uint16_t magic_t;
-const magic_t EEPROM_MAGIC = 0x1240;
-#define EEPROM_MAGIC_ADDR 0
-#define EEPROM_DATA_ADDR (EEPROM_MAGIC_ADDR + sizeof(magic_t))
 
 uint8_t data[] = {
 		TWO_BYTE_VAL(VAL_SENSOR_THRE_LOW), // CFG_SENSOR_THRE_LOW
@@ -37,9 +34,8 @@ bool Config::write(uint8_t aAddr, uint8_t aLen, uint8_t * aValues) {
 	memcpy(data + aAddr, aValues, sizeof(uint8_t) * aLen);
 	// update eeprom backend
 	for(int i = 0; i < aLen; i++) {
-		EEPROM.update(EEPROM_DATA_ADDR + aAddr + i, aValues[i]);
+		EEPROM.update(EEPROM_CONFIG_ADDR + aAddr + i, aValues[i]);
 	}
-
 	return true;
 }
 
@@ -63,13 +59,15 @@ static void Config::dump() {
 	}
 }
 
-static void Config::init() {
-	magic_t magic;
-	EEPROM.get(EEPROM_MAGIC_ADDR, magic);
-	if (magic == EEPROM_MAGIC) {
-		EEPROM.get(EEPROM_DATA_ADDR, data);
+/**
+ * Returns true if memory was inited by default values, false valid values already stored.
+ */
+static void Config::init(bool aUseDefaultValues) {
+	if (aUseDefaultValues) {
+		// copy default values to eeprom
+		EEPROM.put(EEPROM_CONFIG_ADDR, data);
 	} else {
-		EEPROM.put(EEPROM_DATA_ADDR, data);
-		EEPROM.put(EEPROM_MAGIC_ADDR, magic);
+		// restore values from eeprom
+		EEPROM.get(EEPROM_CONFIG_ADDR, data);
 	}
 }

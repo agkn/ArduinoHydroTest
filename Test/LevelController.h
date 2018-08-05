@@ -1,15 +1,16 @@
 /*
  * LevelController.h
  *
- *  Created on: 16 èþë. 2018 ã.
+ *  Created on: 16 ï¿½ï¿½ï¿½. 2018 ï¿½.
  *      Author: Andrey
  */
 #ifndef LEVELCONTROLLER_H_
 #define LEVELCONTROLLER_H_
 
 #include <Arduino.h>
+#include "Controller.h"
 
-class LevelController {
+class LevelController: Controller {
 	uint8_t _sensorPin;
 	uint8_t _sensorVccPin;
 	uint8_t _pumpPin;

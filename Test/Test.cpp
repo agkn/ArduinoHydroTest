@@ -2,9 +2,11 @@
 #include <DS3231.h>
 
 #include "LevelController.h"
-#include "Config.h"
+#include "EepromSections.h"
 #include "DHT.h"
 #include "Log.h"
+#include "planner/Planner.h"
+#include "Config.h"
 
 /**
  * A7 - water sensor signal
@@ -27,16 +29,31 @@
 LevelController lc(LEVEL_PIN, LEVEL_VCC_PIN, PUMP_PIN);
 RTClib clock;
 DS3231 rtc;
+Planner planner;
 DHT dht(DHT_PIN, DHT_TYPE);
+
+const uint8_t RES_PUMP = 1;
 
 void cmd_run();
 void dht_run();
-void setup() {
+void setup1() {
+	// init environment
 	Serial.begin(9600);
+	bool first = EepromSections::checkInited();
 	Wire.begin();
+	Config::init(first);
 	Log::init(Serial);
+
+	// init modules
+	planner.init(first);
 	lc.init();
 	lc.enable(false);
+	if (first) {
+		planner.setTimePin(0, 8 * 3600 + 0 * 60 + 0);
+		planner.setTimePin(1, 20 * 3600 + 0 * 60 + 0);
+		planner.infillFlood(RES_PUMP, 0, 1, 5, 20);
+		planner.infillFlood(RES_PUMP, 1, 0, 5, 30);
+	}
 }
 
 void dumpDate() {
@@ -64,11 +81,26 @@ void dumpDate() {
     Serial.println("d");*/
 }
 
-void loop() {
-	cmd_run();
-	dht_run();
-	dumpDate();
-	lc.run();
+void loop1() {
+	bool pump = false;
+	cmd_run(); // command processing
+	dht_run(); // read sensors
+	dumpDate(); // dump date
+	DateTime now = clock.now();
+	time_t time = now.hour() * 3600 + now.minute() * 60 + now.second();
+	uint8_t idx = 0;
+	while(1) {
+		const uint8_t resid = planner.findActiveRes(time, idx);
+		if (!resid) {
+			break;
+		} else if (resid == RES_PUMP) {
+			pump |= true;
+		}
+	}
+
+
+	lc.enable(pump);
+	lc.run(); // level controller.
 	delay(5000);
 }
 
