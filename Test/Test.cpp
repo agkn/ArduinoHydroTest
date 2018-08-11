@@ -1,3 +1,6 @@
+#include "runcfg.h"
+#ifndef TEST
+
 #include <Arduino.h>
 #include <DS3231.h>
 
@@ -36,7 +39,7 @@ const uint8_t RES_PUMP = 1;
 
 void cmd_run();
 void dht_run();
-void setup1() {
+void setup() {
 	// init environment
 	Serial.begin(9600);
 	bool first = EepromSections::checkInited();
@@ -81,7 +84,7 @@ void dumpDate() {
     Serial.println("d");*/
 }
 
-void loop1() {
+void loop() {
 	bool pump = false;
 	cmd_run(); // command processing
 	dht_run(); // read sensors
@@ -163,3 +166,6 @@ void dht_run() {
 	  Serial.print(t, 2);
 	  Serial.println(" *C ");
 }
+
+
+#endif
