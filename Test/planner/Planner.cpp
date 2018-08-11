@@ -95,12 +95,12 @@ void Planner::read() {
 		for (int i = 0; i < TIMEPIN_NUMBER; i++) {
 			EEPROM.get(TIMEPINS_ADDR + i * sizeof(store_timepin_t), data);
 			dout("Read TimePin: %d, %u", TIMEPINS_ADDR + i * sizeof(store_timepin_t), data);
-			mTimePins[i] = (TP_NOT_USED != data) ? data * 2 : NOT_A_TIME;
+			mTimePins[i] = (TP_NOT_USED != data) ? 2l * data : NOT_A_TIME;
 		}
 	}
 	{
 		EepromReader reader(TIMERANGE_ADDR);
-		dout("reader start: %d, %d", reader.mAddr, TIMERANGE_ADDR);
+		//dout("reader start: %d, %d", reader.mAddr, TIMERANGE_ADDR);
 		while (reader.readU8() == TimeRange::Type::TIME_RANGE) {
 			dout("Read TimeRange: %d", reader.mAddr);
 			TimeRange::add(&mRange, Factory::createTimeRange(this, reader));
@@ -116,7 +116,7 @@ void Planner::save() {
 	}
 
 	EepromWriter writer(TIMERANGE_ADDR);
-	dout("reader start: %d, %d", writer.mAddr, TIMERANGE_ADDR);
+//	dout("writer start: %d, %d", writer.mAddr, TIMERANGE_ADDR);
 	for (TimeRange *range = mRange; range != NULL; range = range->mNext) {
 		dout("Save TimeRange: %d", writer.mAddr);
 		range->save(writer);
@@ -147,7 +147,7 @@ ResourceIterator * Planner::getResourceIterator(time_t aTime) {
 	return new ResourceIterator(this->mRange, aTime);
 }
 
-bool ResourceIterator::next() {
+resource_t ResourceIterator::next() {
 	while (mTimeRange) {
 		// mTimeRange->dump(Serial);
 		resource_t res = mTimeRange->check(mCheckTime);
@@ -155,14 +155,14 @@ bool ResourceIterator::next() {
 		if (NOT_A_RES != res) {
 			mRes = res;
 			mTimeRange = mTimeRange->mNext;
-			return true;
+			return res;
 
 		} else {
 			mTimeRange = mTimeRange->mNext;
 		}
 	}
 
-	return false;
+	return NOT_A_RES;
 }
 
 void Planner::setTimePin(uint8_t mIdx, time_t mTime) {

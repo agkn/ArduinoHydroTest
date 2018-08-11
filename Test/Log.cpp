@@ -7,7 +7,6 @@
 
 #include "Log.h"
 
-
 #define SEND_TYPE(tType) LogStream& LogStream::p(tType aVal) { 	if (ready()) { next(); _stream->print(aVal); } return str; }
 
 Print *_stream;
@@ -35,6 +34,7 @@ void LogStream::send() {
 	_sent = true;
 	}
 }
+
 bool LogStream::ready() {
 	return NULL != _stream  && _stream->availableForWrite();
 }
@@ -50,6 +50,7 @@ SEND_TYPE(uint16_t)
 static void Log::init(Print &aStream) {
 	_stream = &aStream;
 }
+
 static LogStream Log::msg(char aType, uint8_t aMsgCode) {
 	return str.start(aType, aMsgCode);
 }

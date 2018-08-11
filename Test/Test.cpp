@@ -1,5 +1,6 @@
 #include "runcfg.h"
-#ifndef TEST
+#if TEST == SENSORS
+#define __ASSERT_USE_STDERR
 
 #include <Arduino.h>
 #include <DS3231.h>
@@ -92,15 +93,6 @@ void loop() {
 	DateTime now = clock.now();
 	time_t time = now.hour() * 3600 + now.minute() * 60 + now.second();
 	uint8_t idx = 0;
-	while(1) {
-		const uint8_t resid = planner.findActiveRes(time, idx);
-		if (!resid) {
-			break;
-		} else if (resid == RES_PUMP) {
-			pump |= true;
-		}
-	}
-
 
 	lc.enable(pump);
 	lc.run(); // level controller.
@@ -167,5 +159,4 @@ void dht_run() {
 	  Serial.println(" *C ");
 }
 
-
-#endif
+#endif // SENSORS

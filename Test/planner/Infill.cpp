@@ -10,10 +10,9 @@
 
 resource_t DrainFloodFill::check(time_t mTime) {
 	time_t T = mDrainSec + mFloodSec;
-	Serial.println(T);
 	time_t inTime = ( mTime + mShiftSec ) % T;
 
-	dout("DrainFloodFill::check(%lu): inTime: %lu, mFloodSec: %lu, T: %lu ", mTime, inTime, mFloodSec, T);
+//	dout("DrainFloodFill::check(%lu): inTime: %lu, mFloodSec: %lu, T: %lu ", mTime, inTime, mFloodSec, T);
 
 	return inTime < mFloodSec ? mFloodRes : mDrainRes;
 }

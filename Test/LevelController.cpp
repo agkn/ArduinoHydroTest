@@ -1,7 +1,7 @@
 /*
  * LevelController.cpp
  *
- *  Created on: 16 июл. 2018 г.
+ *  Created on: 16 пїЅпїЅпїЅ. 2018 пїЅ.
  *      Author: Andrey
  */
 
@@ -37,12 +37,6 @@ void LevelController::configure() {
 	_sensorThresholdLow = Config::read_u16(CFG_SENSOR_THRE_LOW) << FPA_FRACTIONAL;
 	_pumpOffDelay = Config::read_u8(CFG_PUMP_OFF_DELAY) * 1000; // convert to ms
 	_pumpSwitchInterval = Config::read_u8(CFG_PUMP_SWITCH_INTERVAL);
-	Serial.println("configure:");
-	Serial.println(_sensorThresholdLow, HEX);
-	Serial.println(_sensorThresholdHigh, HEX);
-	Serial.println(_sensorLPF, HEX);
-	Serial.println(_pumpOffDelay);
-	Serial.println(_pumpSwitchInterval);
 }
 
 void LevelController::run() {
@@ -56,30 +50,17 @@ void LevelController::setPumpActive(bool aActive) {
 	  }
 
 	  const uint32_t now = millis();
-	  Serial.print("Now: ");
-	  Serial.print(now);
-	  Serial.print(" Allowed: ");
-	  Serial.println(_pumpChangeAllowed);
 
 	  if ( (int) (now - _pumpChangeAllowed) > 0) {
 	    digitalWrite(_pumpPin, aActive);
 	    _pumpActive = aActive;
 	    _pumpChangeAllowed = now + _pumpSwitchInterval;
-	    Serial.print("pump: active: ");
-	    Serial.println(aActive);
-	  } else {
-	    Serial.println("pump: wait allowed.");
 	  }
 }
 
 void LevelController::setPumpModeDelayed(uint16_t aDelayMs) {
 	  const unsigned long int now  = millis();
 	  _pumpChangeAllowed = now + aDelayMs;
-
-	  Serial.print("Set allowed: ");
-	  Serial.print(now);
-	  Serial.print(" -> ");
-	  Serial.println(_pumpChangeAllowed);
 }
 
 void LevelController::checkWaterLevel() {
@@ -89,12 +70,12 @@ void LevelController::checkWaterLevel() {
 	}
 
 #ifndef ALWAYS_SENSOR_VCC
-	digitalWrite(_sensorVccPin, HIGH); // * Подаем уровень логического 0 на вывод Vcc датчика
-	delay(200);           // ждем готовности сенсора.
+	digitalWrite(_sensorVccPin, HIGH); // * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0 пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ Vcc пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	delay(200);           // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 #endif
 	uint32_t value = analogRead(_sensorPin);
 #ifndef ALWAYS_SENSOR_VCC
-	digitalWrite(_sensorVccPin, LOW); // * Подаем уровень логического 0 на вывод Vcc датчика
+	digitalWrite(_sensorVccPin, LOW); // * пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0 пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ Vcc пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 #endif
 
 	if (_sensorValue == SENSOR_INIT_VAL ) {
@@ -112,10 +93,6 @@ void LevelController::checkWaterLevel() {
 	} else if (_full && (_sensorValue > _sensorThresholdHigh)) {
 		_full = false;
 	}
-
-	Serial.print(value);
-	Serial.print(" - ");
-	Serial.println(_sensorValue >> FPA_FRACTIONAL);
 }
 
 void LevelController::enable(bool aEnabled) {

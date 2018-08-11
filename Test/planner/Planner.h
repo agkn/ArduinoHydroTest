@@ -8,6 +8,8 @@
 #ifndef PLANNER_PLANNER_H_
 #define PLANNER_PLANNER_H_
 #include <Arduino.h>
+#include <assert.h>
+
 #include "types.h"
 #include "Infill.h"
 
@@ -37,6 +39,8 @@ public:
 	void setTimePin(uint8_t mIdx, time_t mTime);
 
 	time_t getTimePin(uint8_t aIdx) {
+		assert(aIdx >=0 && aIdx < TIMEPIN_NUMBER);
+
 		return mTimePins[aIdx];
 	}
 
@@ -53,8 +57,6 @@ public:
 	void dump(Print &aPrint);
 
 	void save();
-
-	void run();
 };
 
 
@@ -111,7 +113,7 @@ class ResourceIterator {
 	resource_t mRes = NOT_A_RES;
 public:
 	ResourceIterator(TimeRange * aTimeRange, time_t aCheckTime): mTimeRange(aTimeRange), mCheckTime(aCheckTime) {}
-	bool next();
+	resource_t next();
 
 	resource_t resource() {
 		return mRes;

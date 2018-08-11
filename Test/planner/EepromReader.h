@@ -25,7 +25,7 @@ public:
 template<typename T>
 inline T& EepromReader::read(T& aData) {
 	EEPROM.get(mAddr, aData);
-	dout("Read eeprom %d bytes at %d", sizeof(T), mAddr);
+//	dout("Read eeprom %d bytes at %d", sizeof(T), mAddr);
 	mAddr += sizeof(T);
 	return aData;
 }

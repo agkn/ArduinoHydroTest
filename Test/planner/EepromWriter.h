@@ -18,7 +18,7 @@ public:
 
 	template<typename T> T& write(T & aData) {
 			EEPROM.put(mAddr, aData);
-			dout("Write eeprom %d bytes at %d", sizeof(T), mAddr);
+//			dout("Write eeprom %d bytes at %d", sizeof(T), mAddr);
 			mAddr += sizeof(T);
 	}
 
