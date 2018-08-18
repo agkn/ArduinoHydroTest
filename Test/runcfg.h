@@ -3,7 +3,8 @@
 
 #define PLANNER 1
 #define SENSORS 2
+#define COMMANDER 3 
 
-// #define TEST PLANNER
+#define TEST COMMANDER
 
 #endif
