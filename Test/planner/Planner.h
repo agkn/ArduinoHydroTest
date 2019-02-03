@@ -10,7 +10,7 @@
 #include <Arduino.h>
 #include <assert.h>
 
-#include "types.h"
+#include "../types.h"
 #include "Infill.h"
 
 const int TIMEPIN_NUMBER = 4;
@@ -36,7 +36,7 @@ public:
 	 */
 	void init(bool aIsFirstRun);
 
-	void setTimePin(uint8_t mIdx, time_t mTime);
+	bool setTimePin(uint8_t mIdx, time_t mTime);
 
 	time_t getTimePin(uint8_t aIdx) {
 		assert(aIdx >=0 && aIdx < TIMEPIN_NUMBER);

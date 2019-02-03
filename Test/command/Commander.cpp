@@ -9,13 +9,6 @@
 #include "../debug.h"
 #include "Commands.h"
 
-const char CMD_SET_TIME_PIN = "t";
-const char CMD_ADD_JOB 		= "j";
-const char CMD_DEL_JOB 		= "d";
-const char CMD_ADD_TIME_PIN = "t";
-
-const char ARG_SEPARATOR = ':';
-
 const int CMD_BUFF_LEN = 12;
 const int CMD_ARGS = 10;
 
@@ -25,8 +18,9 @@ int mArgNum;
 int mCharIndex;
 
 
-void Commander::init(Stream& aStream) {
-	mStream = &aStream;
+void Commander::init(Stream * aStream) {
+	mStream = aStream;
+	mLog = new LogStream(mStream);
 }
 
 void Commander::run() {
@@ -100,8 +94,8 @@ void Commander::ok() {
 	reset();
 }
 
-void Commander::out(const char* aMessage) {
-	mStream->println(aMessage);
+LogStream* Commander::out(char aCmd) {
+	return mLog->start(aCmd);
 }
 
 void Commander::reset() {
@@ -109,7 +103,12 @@ void Commander::reset() {
 	mCharIndex = 0;
 }
 
-Commander::Commander(): mStream(NULL) {
+Commander::Commander(Planner * aPlanner, Hydra::RTC * aRTC):
+				mPlanner(aPlanner),
+				mStream(NULL),
+				mLog(NULL),
+				mRTC(aRTC)
+				{
 	 mCommands = new ListJobs(this);
 	 mCommands->addNext(new ListResources(this));
 	 mCommands->addNext(new ListTimePins(this));

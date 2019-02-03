@@ -11,30 +11,37 @@
 
 class ListJobs: public SimpleCommand {
 public:
-	ListJobs(Commander * aCommaner): SimpleCommand(aCommaner, 'j', 0) {}
+	ListJobs(Commander * aCommaner): SimpleCommand(aCommaner, CMD_QUERY_JOB, 0) {}
 
 	virtual int onProcess(const char aCmd, char **aArgV, int aArcC);
 };
 
 class ListTimePins: public SimpleCommand {
 public:
-	ListTimePins(Commander * aCommaner): SimpleCommand(aCommaner, 't', 0) {}
+	ListTimePins(Commander * aCommaner): SimpleCommand(aCommaner, CMD_QUERY_PINS, 0) {}
 
 	virtual int onProcess(const char aCmd, char **aArgV, int aArcC);
 };
 
 class ListResources: public SimpleCommand {
 public:
-	ListResources(Commander * aCommaner): SimpleCommand(aCommaner, 'r', 0) {}
+	ListResources(Commander * aCommaner): SimpleCommand(aCommaner, CMD_QUERY_RES, 0) {}
 
 	virtual int onProcess(const char aCmd, char **aArgV, int aArcC);
 };
 
 class SetTimePin: public SimpleCommand {
 public:
-	SetTimePin(Commander * aCommaner): SimpleCommand(aCommaner, 't', 3) {}
+	SetTimePin(Commander * aCommaner): SimpleCommand(aCommaner, CMD_SET_PIN, 3) {}
 
 	virtual int onProcess(const char aCmd, char **aArgV, int aArcC);
+};
+
+class TimeCommand: public BaseCmd {
+public:
+	TimeCommand(Commander * aCommaner): BaseCmd(aCommaner) {}
+
+	virtual int process(const char aCmd, char **aArgV, int aArcC);
 };
 
 

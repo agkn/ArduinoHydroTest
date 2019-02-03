@@ -9,22 +9,31 @@
 #define COMMANDER_H_
 #include <Arduino.h>
 #include "BaseCmd.h"
+#include "../planner/Planner.h"
+#include "Log.h"
+#include "../RTC.h"
+
 /*
  * Commands:
  * r - get resources
  * t - get time pins
  * j - get jobs
+ * t - show current time
  *
- * t:id:HH:MM				- set time pin
+ * t:HH:MM:SS 				- set current time
+ * p:id:HH:MM				- set time pin
  * j:id1:id2:p:r1:m1:r2:m2	- add job flood-drain
  * j:id1:id2:c:r			- add job constant
- * d:id1:id2:p				- delete flood-drain job
- * d:id1:id2:c:r			- delete constant job
+ * r:id1:id2:p				- remove flood-drain job
+ * r:id1:id2:c:r			- remove constant job
  * */
 
 class Commander {
 	Stream * mStream;
 	BaseCmd * mCommands;
+	Planner * mPlanner;
+	LogStream * mLog;
+	Hydra::RTC * mRTC;
 
 	void fail(int aResCode);
 	void ok();
@@ -37,14 +46,28 @@ public:
 		RES_TOO_LONG,
 		RES_BAD_FORMAT,
 		RES_BAD_COMMAND,
+		RES_BAD_ARGUMENT,
 	};
 
-	void out(const char * aMessage);
+	LogStream* out(const char aCmd);
 
-	Commander();
-	void init(Stream &aStream);
+	Commander(Planner * aPlanner, Hydra::RTC * aRTC);
+
+	void init(Stream * aStream);
+
 	void run();
+
 	void reset();
+
+	LogStream log();
+
+	Planner * getPlanner() {
+		return mPlanner;
+	}
+
+	Hydra::RTC * getRtc() {
+		return mRTC;
+	}
 };
 
 #endif /* COMMANDER_H_ */

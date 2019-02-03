@@ -8,6 +8,16 @@
 #ifndef COMMAND_BASECMD_H_
 #define COMMAND_BASECMD_H_
 
+const char CMD_TIME 		= 't';
+const char CMD_QUERY_RES 	= 'j';
+const char CMD_QUERY_JOB 	= 'j';
+const char CMD_ADD_JOB 		= 'j';
+const char CMD_QUERY_PINS	= 'p';
+const char CMD_SET_PIN		= 'p';
+const char CMD_REMOVE_JOB	= 'r';
+
+const char ARG_SEPARATOR = ':';
+
 class Commander;
 
 class BaseCmd {

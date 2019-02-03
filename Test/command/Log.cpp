@@ -6,51 +6,53 @@
  */
 
 #include "Log.h"
+#include "../debug.h"
 
-#define SEND_TYPE(tType) LogStream& LogStream::p(tType aVal) { 	if (ready()) { next(); _stream->print(aVal); } return str; }
+#define SEND_TYPE(tType) LogStream* LogStream::p(tType aVal) { 	if (ready()) { next(); mStream->print(aVal); } return this;}
 
-Print *_stream;
-LogStream str;
+LogStream *gStr;
 
-LogStream::LogStream() {
-}
-
-LogStream& LogStream::start(char aType, uint8_t aMsgCode) {
+LogStream* LogStream::start(char aType) {
 	if (!_sent){
 		LogStream::send();
 	}
 	if (ready()) {
-		_stream->print(aType);
-		next();
-		_stream->print(aMsgCode);
+		mStream->print(aType);
 	}
-	return str;
+	return gStr;
 }
 
 void LogStream::send() {
 	if (ready()) {
-	_stream->println();
-	_stream->flush();
-	_sent = true;
+		mStream->println();
+		mStream->flush();
+		_sent = true;
 	}
 }
 
 bool LogStream::ready() {
-	return NULL != _stream  && _stream->availableForWrite();
+	return NULL != mStream  && mStream->availableForWrite();
 }
 
 void LogStream::next() {
-	_stream->print(":");
+	mStream->print(":");
 }
 
 SEND_TYPE(char)
 SEND_TYPE(float)
+SEND_TYPE(int)
+SEND_TYPE(uint8_t)
 SEND_TYPE(uint16_t)
+SEND_TYPE(const char *)
 
-static void Log::init(Print &aStream) {
-	_stream = &aStream;
+static void Log::init(Stream &aStream) {
+	gStr = new LogStream(&aStream);
 }
 
-static LogStream Log::msg(char aType, uint8_t aMsgCode) {
-	return str.start(aType, aMsgCode);
+static LogStream * Log::msg(char aType, uint8_t aMsgCode) {
+	if (!gStr) {
+		dout("Log stream is not inited!");
+		return new LogStream(NULL);
+	}
+	return gStr->start(aType)->p(aMsgCode);
 }

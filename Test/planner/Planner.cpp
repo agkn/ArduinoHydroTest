@@ -14,7 +14,7 @@
 #include "../debug.h"
 #include "Factory.h"
 
-const long DAY = 24L * 3600;
+const time_t DAY = 24L * 3600;
 
 typedef uint16_t store_timepin_t;
 const store_timepin_t TP_NOT_USED = 0xffff;
@@ -165,8 +165,13 @@ resource_t ResourceIterator::next() {
 	return NOT_A_RES;
 }
 
-void Planner::setTimePin(uint8_t mIdx, time_t mTime) {
-	mTimePins[mIdx] = mTime;
+bool Planner::setTimePin(uint8_t aIdx, time_t aTime) {
+	if (aIdx < 0 || aIdx >= TIMEPIN_NUMBER || aTime >= DAY) {
+		return false;
+	}
+
+	mTimePins[aIdx] = aTime;
+	return true;
 }
 
 bool Planner::infillFlood(

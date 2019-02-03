@@ -4,7 +4,8 @@
 #define PLANNER 1
 #define SENSORS 2
 #define COMMANDER 3 
+#define RESOURCE 4
 
-#define TEST COMMANDER
+#define TEST RESOURCE
 
 #endif

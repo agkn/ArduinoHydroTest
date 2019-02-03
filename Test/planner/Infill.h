@@ -8,7 +8,7 @@
 #ifndef PLANNER_INFILL_H_
 #define PLANNER_INFILL_H_
 #include <Arduino.h>
-#include "types.h"
+#include "../types.h"
 #include "EepromReader.h"
 #include "EepromWriter.h"
 

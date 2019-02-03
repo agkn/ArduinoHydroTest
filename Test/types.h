@@ -1,6 +1,6 @@
 #ifndef PLANNER_TYPES_H_
 #define PLANNER_TYPES_H_
-
+#include <Arduino.h>
 
 // time in seconds since the day begin.
 typedef uint32_t time_t;

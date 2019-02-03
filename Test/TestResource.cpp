@@ -1,21 +1,18 @@
 #include "runcfg.h"
-#if TEST == COMMANDER
+#if TEST == RESOURCE
 #define __ASSERT_USE_STDERR
 
 #include <Arduino.h>
 #include "debug.h"
-#include "command/Commander.h"
-#include "test/Planner.h"
-#include "test/RTC.h"
+#include "Resources.h"
 
-Mock::Planner planner;
-Mock::RTC rtc;
+Hydra::Resources res;
 
-Commander commander(&planner, &rtc);
 
 void setup() {
 	Serial.begin(57600);
-	commander.init(&Serial);
+
+	res.init();
 
 	Serial.println("Ready!");
 }
